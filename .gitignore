@@ -1,0 +1,24 @@
+# ───── Dữ liệu nhân sự: TUYỆT ĐỐI KHÔNG ĐẨY LÊN ─────
+CONTRACTS/Onboarding_List.xlsx
+CONTRACTS/output/
+# Script này hard-code họ tên, CCCD, số tài khoản, email, BHXH của nhân viên.
+CONTRACTS/scripts/build_excel.py
+*.xlsx
+!CONTRACTS/templates/*.xlsx
+
+# Hợp đồng đã xuất ra, dù nằm ở đâu
+*-[A-ZÀ-Ỹ][A-ZÀ-Ỹ]*.pdf
+*-[A-ZÀ-Ỹ][A-ZÀ-Ỹ]*.docx
+
+# ───── Môi trường và file tạm ─────
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+.check/
+.scratch/
+CONTRACTS/templates/backup/
+~$*
+
+# ───── File không liên quan tới dự án này ─────
+FDA_Approval_Information_Downloader_14.md

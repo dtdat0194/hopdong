@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QCD · Xuất hợp đồng từ danh sách onboarding</title>
+<meta name="description" content="Tải file Onboarding_List.xlsx lên và xuất hợp đồng lao động / hợp đồng dịch vụ kỹ sư ra PDF hoặc Word. Mọi xử lý chạy ngay trong trình duyệt.">
+<link rel="stylesheet" href="CONTRACTS/app/static/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%231f3864'/><text x='32' y='44' font-size='32' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>Q</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">QCD</div>
+    <div>
+      <h1>Xuất hợp đồng</h1>
+      <p>Công ty TNHH Giải pháp Kỹ thuật QCD</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="file-chip" id="fileChip" hidden></span>
+    <button class="btn ghost" id="btnReset" hidden>Tải file khác</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ─────────── Bước 1: tải file ─────────── -->
+  <section id="uploadView">
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Chọn file Excel">
+      <svg viewBox="0 0 24 24" class="dz-icon" aria-hidden="true">
+        <path d="M12 16V4m0 0 4 4m-4-4L8 8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke-linecap="round"/>
+      </svg>
+      <h2>Kéo thả file <strong>Onboarding_List.xlsx</strong> vào đây</h2>
+      <p>hoặc bấm để chọn file từ máy tính</p>
+      <input type="file" id="fileInput" accept=".xlsx,.xlsm" hidden>
+    </div>
+    <p class="hint hint-mau">
+      File cần có các sheet <code>Onboarding</code>, <code>CongTy</code> và <code>Luong</code>.
+      <a id="mauExcel" href="#">Tải file mẫu</a> nếu bạn chưa có.
+    </p>
+    <p class="hint boot" id="bootStatus" hidden></p>
+    <p class="hint riengtu">
+      Trang này không có máy chủ. File Excel của bạn được đọc và hợp đồng được dựng
+      ngay trong trình duyệt, không có dữ liệu nào được gửi đi.
+    </p>
+  </section>
+
+  <!-- ─────────── Bước 2: xem và chọn ─────────── -->
+  <section id="listView" hidden>
+
+    <div class="stats">
+      <div class="stat"><span class="stat-num" id="stTotal">0</span><span class="stat-lbl">Nhân sự</span></div>
+      <div class="stat"><span class="stat-num" id="stHdld">0</span><span class="stat-lbl">HĐ lao động</span></div>
+      <div class="stat"><span class="stat-num" id="stHdks">0</span><span class="stat-lbl">HĐ dịch vụ kỹ sư</span></div>
+      <div class="stat ok"><span class="stat-num" id="stReady">0</span><span class="stat-lbl">Đủ thông tin</span></div>
+      <div class="stat warn"><span class="stat-num" id="stMissing">0</span><span class="stat-lbl">Còn thiếu</span></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
+        <input type="search" id="search" placeholder="Tìm theo tên, chức danh, bộ phận…" autocomplete="off">
+      </div>
+      <div class="filters" id="filters" role="group" aria-label="Lọc danh sách">
+        <button class="chip active" data-filter="all">Tất cả</button>
+        <button class="chip" data-filter="HDLD">HĐ lao động</button>
+        <button class="chip" data-filter="HDKS">HĐ dịch vụ</button>
+        <button class="chip" data-filter="ready">Đủ thông tin</button>
+        <button class="chip" data-filter="missing">Còn thiếu</button>
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table id="table">
+        <thead>
+          <tr>
+            <th class="col-check"><input type="checkbox" id="checkAll" aria-label="Chọn tất cả"></th>
+            <th class="col-stt">#</th>
+            <th>Nhân sự</th>
+            <th>Loại hợp đồng</th>
+            <th>Số HĐ</th>
+            <th>Thời hạn</th>
+            <th class="num">Mức lương / tháng</th>
+            <th>Trạng thái</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <p class="empty" id="emptyMsg" hidden>Không có nhân sự nào khớp bộ lọc.</p>
+    </div>
+  </section>
+</main>
+
+<!-- ─────────── Thanh thao tác ─────────── -->
+<div class="actionbar" id="actionbar" hidden>
+  <div class="sel-info"><strong id="selCount">0</strong> nhân sự được chọn<span id="selWarn" class="sel-warn" hidden></span></div>
+  <label class="switch" id="mergeWrap" hidden
+         title="Bỏ trống thì mỗi nhân sự tải về một file riêng mang đúng tên của họ">
+    <input type="checkbox" id="mergeChk"><span></span>Gộp tất cả vào một file PDF
+  </label>
+  <div class="actions">
+    <button class="btn ghost" id="btnPreview">Xem trước</button>
+    <button class="btn ghost" id="btnDocx">Tải Word</button>
+    <button class="btn primary" id="btnPdf">Tải PDF</button>
+  </div>
+</div>
+
+<!-- ─────────── Ngăn chi tiết ─────────── -->
+<div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Chi tiết nhân sự">
+  <header>
+    <div><h2 id="drawerName"></h2><p id="drawerRole"></p></div>
+    <button class="icon-btn" id="drawerClose" aria-label="Đóng">&times;</button>
+  </header>
+  <div class="drawer-body" id="drawerBody"></div>
+  <footer>
+    <button class="btn ghost" id="drawerPreview">Xem trước</button>
+    <button class="btn primary" id="drawerPdf">Tải PDF</button>
+  </footer>
+</aside>
+
+<!-- ─────────── Xem trước ─────────── -->
+<div class="modal" id="previewModal" hidden>
+  <div class="modal-box">
+    <header>
+      <h2 id="previewTitle">Xem trước hợp đồng</h2>
+      <button class="icon-btn" id="previewClose" aria-label="Đóng">&times;</button>
+    </header>
+    <iframe id="previewFrame" title="Xem trước hợp đồng"></iframe>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+<div class="loading" id="loading" hidden><div class="spinner"></div><span id="loadingText">Đang xử lý…</span></div>
+
+<script src="web/backend-pyodide.js"></script>
+<script src="CONTRACTS/app/static/app.js"></script>
+</body>
+</html>

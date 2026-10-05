@@ -1,0 +1,10 @@
+# Dùng cho bản chạy trên máy. Bản web tự nạp các gói này qua Pyodide.
+docxtpl==0.20.2
+openpyxl==3.1.5
+python-docx==1.2.0
+reportlab==5.0.1
+
+# Chỉ bản chạy trên máy mới cần máy chủ
+fastapi==0.142.2
+python-multipart==0.0.32
+uvicorn==0.54.0
