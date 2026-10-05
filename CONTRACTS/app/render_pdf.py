@@ -347,7 +347,9 @@ def build_pdf(items, stream):
         pagesize=(page["width"] * cm, page["height"] * cm),
         leftMargin=page["left"] * cm, rightMargin=page["right"] * cm,
         topMargin=page["top"] * cm, bottomMargin=page["bottom"] * cm,
-        title="Hợp đồng", author="Công ty TNHH Giải pháp Kỹ thuật QCD",
+        # Tên công ty lấy từ sheet CongTy trong file Excel, không ghi cứng ở đây:
+        # đổi tên công ty trong Excel là siêu dữ liệu PDF đổi theo.
+        title="Hợp đồng", author=items[0][1].get("cong_ty", ""),
     )
     doc.keepTogetherClass = _GiuVoiDoanSau
     story = []

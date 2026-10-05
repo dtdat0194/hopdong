@@ -24,7 +24,7 @@ MAU_EXCEL = ROOT / "Onboarding_List.xlsx"
 HAN_PHIEN = 6 * 3600          # giữ file đã tải lên trong 6 giờ
 GIOI_HAN_MB = 20
 
-app = FastAPI(title="QCD - Xuất hợp đồng")
+app = FastAPI(title="Xuất hợp đồng")
 _store: dict[str, dict] = {}
 
 
