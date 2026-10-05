@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hướng dẫn sử dụng · Xuất hợp đồng</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .doc { max-width: 820px; margin: 0 auto; padding: 32px 28px 100px; }
+  .doc h2 {
+    font-size: 21px; margin: 44px 0 14px; padding-top: 22px;
+    border-top: 1px solid var(--line);
+  }
+  .doc h2:first-of-type { border-top: none; padding-top: 0; margin-top: 26px; }
+  .doc h3 { font-size: 16px; margin: 26px 0 8px; }
+  .doc p, .doc li { color: #333a4a; }
+  .doc ol, .doc ul { padding-left: 22px; margin: 10px 0; }
+  .doc li { margin: 7px 0; }
+  .doc li > ul { margin: 6px 0; }
+  .lead { font-size: 16px; color: var(--muted); margin: 6px 0 0; }
+
+  .buoc { counter-reset: buoc; list-style: none; padding: 0; }
+  .buoc > li {
+    counter-increment: buoc; position: relative;
+    padding: 0 0 0 44px; margin: 18px 0;
+  }
+  .buoc > li::before {
+    content: counter(buoc); position: absolute; left: 0; top: -1px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--navy); color: #fff;
+    font-size: 14px; font-weight: 650;
+    display: grid; place-items: center;
+  }
+  /* Chỉ dòng tiêu đề của mỗi bước mới tách riêng một dòng, chữ in đậm giữa câu thì không. */
+  .buoc > li > strong:first-child { display: block; margin-bottom: 2px; }
+
+  .note { border-radius: 10px; padding: 13px 16px; margin: 16px 0; font-size: 14.5px; }
+  .note.warn { background: var(--warn-bg); color: #6e4705; }
+  .note.ok { background: var(--ok-bg); color: #0f5c35; }
+  .note.info { background: var(--navy-50); color: #24406f; }
+  .note strong { font-weight: 650; }
+
+  table.doc-t { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14.5px; }
+  table.doc-t th, table.doc-t td {
+    text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  table.doc-t th { background: #fafbfd; font-size: 12.5px; text-transform: uppercase;
+                   letter-spacing: .04em; color: var(--muted); }
+  table.doc-t td:first-child { white-space: nowrap; font-weight: 550; }
+
+  .muc-luc { background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+             padding: 16px 22px; margin: 26px 0 8px; }
+  .muc-luc p { margin: 0 0 8px; font-weight: 650; font-size: 13px;
+               text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .muc-luc ol { margin: 0; }
+
+  @media print {
+    .topbar { position: static; }
+    .doc h2 { break-after: avoid; }
+    .note, .buoc > li, table.doc-t { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">QCD</div>
+    <div>
+      <h1>Hướng dẫn sử dụng</h1>
+      <p>Công cụ xuất hợp đồng</p>
+    </div>
+  </div>
+  <a class="btn ghost" id="veCongCu" href="./">Quay lại công cụ</a>
+</header>
+<script>
+  // Bản chạy trên máy phục vụ trang này ngay ở thư mục gốc, còn bản web đặt nó trong
+  // CONTRACTS/app/static/ nên phải lùi về đúng chỗ chứa trang chính.
+  const thuMuc = "/CONTRACTS/app/static/";
+  const vt = location.pathname.indexOf(thuMuc);
+  if (vt >= 0) document.getElementById("veCongCu").href = location.pathname.slice(0, vt + 1);
+</script>
+
+<main class="doc">
+
+  <p class="lead">
+    Công cụ này đọc file danh sách nhân sự dạng Excel và xuất ra hợp đồng hoàn chỉnh
+    bản Word hoặc PDF. Bạn không cần cài đặt gì, chỉ cần mở trang và chọn file.
+  </p>
+
+  <div class="muc-luc">
+    <p>Nội dung</p>
+    <ol>
+      <li><a href="#cach-dung">Các bước sử dụng</a></li>
+      <li><a href="#truoc-khi-xuat">Cần kiểm tra trước khi xuất — phần quan trọng nhất</a></li>
+      <li><a href="#tu-dien">Những chỗ công cụ tự điền giúp bạn</a></li>
+      <li><a href="#loi-thuong-gap">Lỗi thường gặp</a></li>
+      <li><a href="#cau-hoi">Câu hỏi hay gặp</a></li>
+    </ol>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <h2 id="cach-dung">1. Các bước sử dụng</h2>
+
+  <ol class="buoc">
+    <li>
+      <strong>Mở trang và chờ chuẩn bị xong</strong>
+      Lần đầu vào trang, máy cần tải bộ xử lý về nên mất khoảng 10 đến 30 giây,
+      có dòng chữ báo tiến trình ngay dưới ô chọn file. Từ lần sau vào là dùng được ngay.
+    </li>
+    <li>
+      <strong>Chọn file Excel danh sách nhân sự</strong>
+      Kéo thả file vào khung giữa trang, hoặc bấm vào khung để chọn từ máy.
+      File phải có đủ ba sheet: <code>Onboarding</code>, <code>CongTy</code> và <code>Luong</code>.
+    </li>
+    <li>
+      <strong>Xem bảng số liệu tổng quan</strong>
+      Ngay sau khi nạp file, năm ô ở đầu trang cho biết tổng số nhân sự, số hợp đồng
+      lao động, số hợp đồng dịch vụ, số người đủ thông tin và số người còn thiếu.
+      Ô <strong>“Còn thiếu”</strong> là ô bạn cần để ý nhất.
+    </li>
+    <li>
+      <strong>Chọn người cần xuất hợp đồng</strong>
+      Những người được đánh dấu <code>x</code> ở cột <em>“Tạo HĐ (x)”</em> trong Excel
+      sẽ được chọn sẵn. Bạn vẫn tự tích thêm hoặc bỏ bớt được, hoặc tích ô trên cùng
+      để chọn tất cả những người đang hiển thị.
+    </li>
+    <li>
+      <strong>Kiểm tra từng người bằng nút “Chi tiết”</strong>
+      Bảng chi tiết hiện toàn bộ thông tin sẽ được đưa vào hợp đồng. Nếu người đó còn
+      thiếu thông tin, danh sách các mục thiếu được liệt kê rõ ngay đầu bảng.
+    </li>
+    <li>
+      <strong>Bấm “Xem trước” trước khi tải</strong>
+      Bản xem trước chính là bản PDF sẽ tải về, không phải bản gần giống.
+      Đây là bước rẻ nhất để phát hiện sai sót.
+    </li>
+    <li>
+      <strong>Tải về bản Word hoặc PDF</strong>
+      Mỗi người tải về một file riêng, tên file mang đúng tên người đó nên không sợ gửi nhầm.
+      Nếu chọn từ hai người trở lên, có thêm tuỳ chọn gộp tất cả vào một file PDF duy nhất
+      để tiện in hàng loạt.
+    </li>
+  </ol>
+
+  <div class="note info">
+    Bản Word và bản PDF có nội dung và định dạng giống hệt nhau. Dùng PDF để gửi và ký,
+    dùng Word khi cần sửa thêm vài chữ cho riêng một người.
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <h2 id="truoc-khi-xuat">2. Cần kiểm tra trước khi xuất</h2>
+
+  <h3>Mở và lưu file Excel bằng Excel trước khi tải lên</h3>
+  <p>
+    Đây là lỗi âm thầm nhất và đáng nói trước tiên. Một số cột trong file là công thức,
+    ví dụ <em>Ngày kết thúc</em> được tính từ ngày bắt đầu và số tháng. Công cụ đọc
+    <strong>kết quả mà Excel đã tính và lưu lại</strong>, chứ không tự tính công thức.
+  </p>
+  <p>
+    Nghĩa là nếu file được tạo bằng công cụ khác, hoặc được sửa rồi đóng mà chưa lưu bằng
+    Excel, những cột công thức sẽ bị đọc thành trống. Hợp đồng vẫn xuất ra nhưng chỗ đó
+    là dấu chấm lửng. Cách phòng tránh rất đơn giản: mở file bằng Excel, nhấn lưu, rồi mới tải lên.
+  </p>
+
+  <h3>Ô “Còn thiếu” nên bằng 0</h3>
+  <p>
+    Công cụ không chặn bạn xuất hợp đồng thiếu thông tin — nó vẫn xuất, nhưng chỗ trống
+    sẽ in thành dấu chấm lửng <code>…………</code> để bạn điền tay sau. Thanh thao tác dưới
+    màn hình cũng cảnh báo số hợp đồng đang thiếu khi bạn chọn phải những người này.
+  </p>
+  <p>Danh sách thông tin bắt buộc khác nhau giữa hai loại hợp đồng:</p>
+
+  <table class="doc-t">
+    <thead>
+      <tr><th>Loại hợp đồng</th><th>Thông tin bắt buộc</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Cả hai loại</td>
+        <td>Họ và tên · Ngày sinh · Nơi cư trú · Số CCCD · Ngày cấp CCCD · Nơi cấp CCCD ·
+            Ngày bắt đầu · Ngày kết thúc · Mức lương / Thù lao · Số tài khoản ·
+            Tên ngân hàng · Chủ tài khoản · Ngày ký HĐ</td>
+      </tr>
+      <tr>
+        <td>HĐ lao động<br>cần thêm</td>
+        <td>Chức danh (VN) · Bộ phận · Địa điểm làm việc</td>
+      </tr>
+      <tr>
+        <td>HĐ dịch vụ<br>cần thêm</td>
+        <td>Lĩnh vực chuyên môn (HĐ dịch vụ)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Cột “Loại hợp đồng” phải có giá trị</h3>
+  <p>
+    Cột này chỉ nhận <code>HDLD</code> cho hợp đồng lao động hoặc <code>HDKS</code> cho
+    hợp đồng dịch vụ kỹ sư. Người nào bỏ trống sẽ hiện trạng thái
+    <em>“Chưa chọn loại HĐ”</em> màu đỏ và <strong>không tích chọn được</strong>,
+    vì công cụ không biết phải dùng mẫu hợp đồng nào.
+  </p>
+
+  <h3>Bước cuối trước khi gửi đi</h3>
+  <p>
+    Bấm xem trước ít nhất một người cho mỗi loại hợp đồng, rồi soi sáu mục dễ sai nhất:
+    họ tên, số CCCD, số hợp đồng, thời hạn, mức lương kèm số tiền bằng chữ, và số tài khoản.
+  </p>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <h2 id="tu-dien">3. Những chỗ công cụ tự điền giúp bạn</h2>
+
+  <p>
+    Mấy mục dưới đây công cụ tự suy ra khi bạn để trống. Tiện, nhưng vì là máy đoán nên
+    bạn nên liếc qua bản xem trước để xác nhận.
+  </p>
+
+  <table class="doc-t">
+    <thead>
+      <tr><th>Mục</th><th>Cách công cụ tự điền và điều cần lưu ý</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Số HĐ</td>
+        <td>Bỏ trống thì được cấp số kế tiếp, đếm riêng cho từng loại hợp đồng.
+            <strong>Nếu công ty đã ký hợp đồng nào ngoài công cụ này, số cấp tự động có thể
+            trùng.</strong> Số được cấp hiện trong bảng chi tiết, nên kiểm lại cho chắc.</td>
+      </tr>
+      <tr>
+        <td>Thời hạn</td>
+        <td>Lấy từ cột <em>Thời hạn (tháng)</em>. Nếu cột đó trống thì tính từ ngày bắt đầu
+            và ngày kết thúc. Lưu ý <em>Ngày kết thúc</em> là <strong>ngày cuối cùng còn
+            hiệu lực</strong> của hợp đồng, không phải ngày liền sau khi hết hạn.</td>
+      </tr>
+      <tr>
+        <td>Mức lương</td>
+        <td>Ưu tiên cột <em>Mức lương / Thù lao (VNĐ/tháng)</em> bên sheet Onboarding.
+            Nếu trống thì tính từ sheet <code>Luong</code>: đơn giá nhân số giờ mỗi tuần
+            nhân bốn, và quy đổi theo tỷ giá ở ô <code>B1</code> nếu đơn giá ghi bằng USD.</td>
+      </tr>
+      <tr>
+        <td>Số tiền bằng chữ</td>
+        <td>Bỏ trống cột <em>Số tiền bằng chữ</em> thì công cụ tự đọc số thành chữ.
+            Nên đọc lại một lượt, vì đây là chỗ khách hàng và nhân viên soi kỹ nhất.</td>
+      </tr>
+      <tr>
+        <td>Số CCCD</td>
+        <td>Nếu Excel làm rụng số 0 ở đầu, công cụ tự thêm lại cho đủ 12 chữ số.</td>
+      </tr>
+      <tr>
+        <td>Họ và tên</td>
+        <td>Tự chuyển thành chữ in hoa khi đưa vào hợp đồng.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <h2 id="loi-thuong-gap">4. Lỗi thường gặp</h2>
+
+  <div class="note warn">
+    <strong>Tên người bị thay bằng tên chủ tài khoản ngân hàng.</strong>
+    Lỗi này đã xảy ra khi sao chép dữ liệu giữa các cột, và rất khó phát hiện vì hợp đồng
+    vẫn xuất ra bình thường với một cái tên trông hợp lệ. Trước khi xuất, hãy đối chiếu
+    cột <em>Họ và tên</em> với cột <em>Chủ tài khoản</em>; nếu hai cột là hai người khác
+    nhau thì kiểm tra lại xem có nhầm không.
+  </div>
+
+  <h3>Tên trong sheet Luong không khớp với sheet Onboarding</h3>
+  <p>
+    Công cụ tra lương bằng cách so khớp họ tên giữa hai sheet. Lệch một dấu cách hay một
+    dấu thanh là không tra được, và người đó sẽ hiện thiếu mức lương dù sheet Luong có dữ liệu.
+  </p>
+
+  <h3>Ngày tháng bị nhập thành chữ</h3>
+  <p>
+    Các cột ngày phải ở định dạng ngày của Excel. Nếu ô bị để dạng văn bản, công cụ có thể
+    đọc không ra và bỏ trống mục đó. Dấu hiệu nhận biết là ô căn lề trái thay vì lề phải.
+  </p>
+
+  <h3>File Word không mở được hoặc báo hỏng</h3>
+  <p>
+    Thường do file tải về chưa xong. Tải lại một lần nữa, và nếu đang tải nhiều người cùng
+    lúc thì chờ trình duyệt tải hết rồi hãy mở.
+  </p>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <h2 id="cau-hoi">5. Câu hỏi hay gặp</h2>
+
+  <h3>Dữ liệu nhân sự của tôi có bị gửi lên mạng không?</h3>
+  <p>
+    Không. Toàn bộ việc đọc file và dựng hợp đồng diễn ra ngay trong trình duyệt trên máy
+    bạn. Trang web này không có máy chủ nhận file, và file Excel bạn chọn không rời khỏi máy.
+  </p>
+
+  <h3>Vì sao lần đầu vào trang lại chậm?</h3>
+  <p>
+    Vì trình duyệt phải tải bộ xử lý hợp đồng về máy, khoảng 10 đến 30 giây tuỳ đường
+    truyền. Sau đó nó được lưu lại nên các lần sau vào là chạy ngay.
+  </p>
+
+  <h3>Tôi muốn sửa câu chữ trong hợp đồng thì làm thế nào?</h3>
+  <p>
+    Nội dung hợp đồng nằm trong hai file mẫu Word của hệ thống, không sửa được từ trang này.
+    Liên hệ người phụ trách công cụ để chỉnh file mẫu; sửa ở đó thì mọi hợp đồng xuất ra
+    sau này đều đổi theo.
+  </p>
+
+  <h3>Tôi lỡ chọn nhầm file Excel thì sao?</h3>
+  <p>
+    Bấm nút <em>“Tải file khác”</em> ở góc trên bên phải để bắt đầu lại từ đầu.
+  </p>
+
+</main>
+</body>
+</html>

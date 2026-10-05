@@ -6,6 +6,10 @@ CONTRACTS/scripts/build_excel.py
 *.xlsx
 !CONTRACTS/templates/*.xlsx
 
+# Bản Word của hướng dẫn: dựng lại bất cứ lúc nào từ trang huong-dan.html bằng
+# scripts/xuat_huong_dan_word.py, nên không cần giữ trong kho mã.
+Huong_dan_su_dung.docx
+
 # Hợp đồng đã xuất ra, dù nằm ở đâu
 *-[A-ZÀ-Ỹ][A-ZÀ-Ỹ]*.pdf
 *-[A-ZÀ-Ỹ][A-ZÀ-Ỹ]*.docx
