@@ -1,0 +1,24 @@
+# Chạy mỗi lần đẩy mã lên. Trang web vẫn tự cập nhật từ nhánh main như cũ;
+# workflow này không đụng tới việc đó, nó chỉ soi xem lần đẩy có gì sai không.
+name: Kiểm tra
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  kiem-tra:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # Chỉ cài phần dựng hợp đồng; máy chủ FastAPI không liên quan ở đây.
+      - run: pip install docxtpl openpyxl python-docx reportlab
+
+      - run: python CONTRACTS/scripts/kiem_tra.py
